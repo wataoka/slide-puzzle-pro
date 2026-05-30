@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Slide Puzzle</string>
+    <string name="new_game">New Game</string>
+    <string name="moves">Moves</string>
+    <string name="time">Time</string>
+    <string name="you_win">You solved it!</string>
+    <string name="play_again">Play Again</string>
+</resources>
