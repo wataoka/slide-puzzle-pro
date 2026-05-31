@@ -27,20 +27,57 @@ Always prioritize getting something releasable over adding features. Keep Play S
   - `Board.kt` — Compose grid UI component
 
 ## Current Status
-App builds and runs on emulator (Pixel 8a, API 35, `emulator-5554`). Game logic and UI confirmed working.
+**Play Store submission in progress — waiting for Google identity verification.**
 
-**Next step: Play Store release**
-1. Generate a signing keystore
-2. Build a signed release AAB
-3. Register Google Play Developer account ($25 one-time fee)
-4. Create store listing (512×512 icon, screenshots, description, privacy policy)
-5. Submit for review
+### Play Store Submission Checklist
+- [x] 1. Generate signing keystore
+- [x] 2. App icons (mipmap + 512×512 for Play Store)
+- [x] 3. Build signed release AAB
+- [x] 4. Privacy policy (GitHub Pages)
+- [x] 5. Store listing copy
+- [x] 6. Screenshots
+- [ ] 7. Google identity verification (submitted — pending)
+- [ ] 8. Upload AAB + submit for review
+
+### Store Listing Copy
+- **Title:** Slide Puzzle Pro
+- **Short description:** The classic 15-puzzle. Slide the tiles. Beat your time.
+- **Full description:**
+  > A clean, no-nonsense 15-puzzle with nothing in the way.
+  >
+  > No ads, no accounts, and no internet required — just you and the puzzle.
+  > Pick it up anytime, put it down anytime. It's always ready when you are.
+- **Category:** Puzzle / Brain & Puzzle Games
+- **Privacy policy URL:** https://wataoka.github.io/slide-puzzle-pro/privacy_policy.html
+
+### Signing
+- Keystore: `~/keystores/slidepuzzle.jks` (alias: `slidepuzzle`, validity: 10,000 days)
+- Credentials stored in `keystore.properties` (gitignored — never commit)
+- ⚠️ Back up the keystore file externally — losing it means you can never update the app
+
+### Release Assets (in `store_assets/`)
+- `ic_launcher_512.png` — Play Store icon
+- `screenshot1.png` — in-game screenshot
+- `screenshot_title.png` — branded title card
+- `privacy_policy.html` — source for GitHub Pages
+
+### AAB Location
+`app/build/outputs/bundle/release/app-release.aab` (1.2 MB, signed)
 
 ## Build Notes
-No system Java or Gradle installed. Use these when building from terminal:
-- `JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"`
-- Gradle binary: `~/.gradle/wrapper/dists/gradle-8.7-bin/bhs2wmbdwecv87pi65oeuq5iu/gradle-8.7/bin/gradle`
-- Project flag: `-p "/Users/wataoka/Documents/Claude/Projects/Slide Puzzle Pro"`
+No system Java or Gradle installed. The `./gradlew` script has an issue — use this instead:
+
+```bash
+cd "/Users/wataoka/Documents/Claude/Projects/Slide Puzzle Pro"
+"/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/java" \
+  -classpath gradle/wrapper/gradle-wrapper.jar \
+  org.gradle.wrapper.GradleWrapperMain \
+  bundleRelease
+```
+
+Common tasks:
+- `bundleRelease` — build signed release AAB
+- `assembleDebug` — build debug APK for emulator testing
 
 ## Feature Tiers
 - **v1 (MVP):** Working 4×4 15 puzzle, move counter, timer, new game button, solve detection
