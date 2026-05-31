@@ -1,5 +1,7 @@
 package com.wataoka.slidepuzzle
 
+import android.media.AudioAttributes
+import android.media.SoundPool
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
@@ -31,6 +34,23 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun GameScreen() {
+    val context = LocalContext.current
+    val soundPool = remember {
+        SoundPool.Builder()
+            .setMaxStreams(3)
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build()
+            )
+            .build()
+    }
+    val moveSoundId = remember { soundPool.load(context, R.raw.tile_move, 1) }
+    DisposableEffect(Unit) {
+        onDispose { soundPool.release() }
+    }
+
     val size = 4
     var state by remember { mutableStateOf(PuzzleState.shuffled(size)) }
     var moves by remember { mutableIntStateOf(0) }
@@ -75,6 +95,7 @@ fun GameScreen() {
             state = state,
             onTileTap = { index ->
                 if (running && state.canMove(index)) {
+                    soundPool.play(moveSoundId, 1f, 1f, 1, 0, 1f)
                     state = state.move(index)
                     moves++
                     if (state.isSolved) running = false

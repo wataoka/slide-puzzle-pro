@@ -82,3 +82,11 @@ Common tasks:
 ## Feature Tiers
 - **v1 (MVP):** Working 4×4 15 puzzle, move counter, timer, new game button, solve detection
 - **Post-launch:** Additional grid sizes, image puzzles, leaderboard, animations, etc.
+
+## Implemented Since MVP
+- **Tile-move sound** (in signed release AAB as of 2026-05-31): plays a short click on each valid move.
+  - Sound file: `app/src/main/res/raw/tile_move.wav` (~6.6 KB, generated locally; confirmed bundled at
+    `base/res/raw/tile_move.wav` inside the release AAB).
+  - Played via `SoundPool` in `MainActivity.kt` (`GameScreen`). Chosen over `AudioManager.playSoundEffect`
+    because the latter only plays when the system "Touch sounds" setting is on — many users disable it.
+  - `SoundPool` is created with `remember` and released in a `DisposableEffect(Unit) { onDispose { ... } }`.
