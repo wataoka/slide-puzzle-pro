@@ -9,4 +9,5 @@ build/
 .cxx
 *.jks
 *.keystore
+keystore.properties
 .claude/settings.local.json
