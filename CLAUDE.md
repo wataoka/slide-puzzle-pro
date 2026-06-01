@@ -29,6 +29,10 @@ Always prioritize getting something releasable over adding features. Keep Play S
 ## Current Status
 **Play Store submission in progress — waiting for Google identity verification.**
 
+> **NEXT ACTION:** When ID verification clears → upload
+> `app/build/outputs/bundle/release/app-release.aab` (already built and signed, with
+> tile sound included) to Play Console and submit for review. No rebuild needed.
+
 ### Play Store Submission Checklist
 - [x] 1. Generate signing keystore
 - [x] 2. App icons (mipmap + 512×512 for Play Store)
