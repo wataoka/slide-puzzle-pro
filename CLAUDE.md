@@ -125,17 +125,17 @@ Common tasks:
 ## Planned Features (requested 2026-06-06)
 User-requested batch, in priority order. Analytics is deferred (heavy, needs design discussion).
 
-1. **Tile color change** — tiles in the correct position render a *darker* blue; tiles in the
-   wrong position render a *lighter* blue. (Correct position for value `v` is board index `v-1`.)
-2. **Touch sensitivity** — tile should move on touch *down*, not on finger release. Currently
-   `Tile` uses `.clickable {}` (fires on tap-up). Switch to a press-down gesture
-   (`pointerInput { awaitEachGesture { awaitFirstDown(); ... } }` or `detectTapGestures(onPress)`).
-3. **Decimal timer** — display elapsed time to **two** decimal places (e.g. `12.34`).
-   - Internally track precise elapsed time (store millis/nanos), not integer seconds. The current
-     1-second tick loop must be replaced with a start-timestamp + frequent UI tick (~30–50 ms).
-   - **For analytics, persist finish time at higher precision (≥5 decimal places).** Display rounds
-     to 2 dp; storage keeps the precision.
-4. **Disable automatic rotation** — lock the app to portrait orientation. Currently the screen
+1. ✅ **Tile color change** (DONE — commit `e804a39`, verified on emulator) — tiles in the correct
+   position render a *darker* blue; tiles in the wrong position render a *lighter* blue.
+   (Correct position for value `v` is board index `v-1`.)
+2. ✅ **Touch sensitivity** (DONE — commit `405f3d8`, verified) — tile moves on touch *down*, not on
+   finger release. Replaced `.clickable {}` with a `pointerInput`/`awaitFirstDown` press-down gesture
+   (guarded by `rememberUpdatedState` so it never fires with stale state).
+3. ✅ **Decimal timer** (DONE — commit `23980e4`, verified) — elapsed time shows two decimals (`SS.CC`).
+   - Backed by a monotonic `System.nanoTime()` start stamp + ~33 ms UI tick (replaced the 1-second loop).
+   - Elapsed value kept in **nanoseconds** so upcoming analytics can record finish times at higher
+     precision (≥5 dp) than the 2-dp display.
+4. ⏳ **Disable automatic rotation** (NEXT) — lock the app to portrait orientation. Currently the screen
    auto-rotates with the device; it should stay fixed. Add `android:screenOrientation="portrait"`
    to the `<activity>` in `AndroidManifest.xml` (and/or set it in `MainActivity`).
 5. **Analytics (DEFERRED — design discussion required, not first step)** — log each finish
