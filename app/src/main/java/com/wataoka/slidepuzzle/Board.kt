@@ -1,15 +1,19 @@
 package com.wataoka.slidepuzzle
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,11 +72,19 @@ private fun Tile(
     }
     // Darker blue when the tile is in its correct position, lighter blue otherwise.
     val tileColor = if (isCorrect) Color(0xFF1E4FD0) else Color(0xFF6B97FF)
+    // Keep the latest onClick so the touch-down gesture never fires with stale game state.
+    val currentOnClick by rememberUpdatedState(onClick)
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
             .background(tileColor)
-            .clickable { onClick() },
+            // Fire on touch-down (first pointer press) rather than on release.
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    awaitFirstDown()
+                    currentOnClick()
+                }
+            },
         contentAlignment = Alignment.Center
     ) {
         Text(
