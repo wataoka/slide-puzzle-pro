@@ -135,9 +135,9 @@ User-requested batch, in priority order. Analytics is deferred (heavy, needs des
    - Backed by a monotonic `System.nanoTime()` start stamp + ~33 ms UI tick (replaced the 1-second loop).
    - Elapsed value kept in **nanoseconds** so upcoming analytics can record finish times at higher
      precision (≥5 dp) than the 2-dp display.
-4. ⏳ **Disable automatic rotation** (NEXT) — lock the app to portrait orientation. Currently the screen
-   auto-rotates with the device; it should stay fixed. Add `android:screenOrientation="portrait"`
-   to the `<activity>` in `AndroidManifest.xml` (and/or set it in `MainActivity`).
+4. ✅ **Disable automatic rotation** (DONE — commit `778a96c`, verified on emulator) — locked to
+   portrait via `android:screenOrientation="portrait"` on `MainActivity` in `AndroidManifest.xml`.
+   Also prevents the rotation-triggered game reset.
 5. **Analytics (DEFERRED — design discussion required, not first step)** — log each finish
    (finish time, finish steps) and show statistics: scatter of finish times, average finish time,
    minimal finish steps, scatter of step-count vs finish-time, etc. Needs local persistence
