@@ -122,6 +122,45 @@ Common tasks:
 - `bundleRelease` — build signed release AAB
 - `assembleDebug` — build debug APK for emulator testing
 
+## Planned Features (requested 2026-06-06)
+User-requested batch, in priority order. Analytics is deferred (heavy, needs design discussion).
+
+1. **Tile color change** — tiles in the correct position render a *darker* blue; tiles in the
+   wrong position render a *lighter* blue. (Correct position for value `v` is board index `v-1`.)
+2. **Touch sensitivity** — tile should move on touch *down*, not on finger release. Currently
+   `Tile` uses `.clickable {}` (fires on tap-up). Switch to a press-down gesture
+   (`pointerInput { awaitEachGesture { awaitFirstDown(); ... } }` or `detectTapGestures(onPress)`).
+3. **Decimal timer** — display elapsed time to **two** decimal places (e.g. `12.34`).
+   - Internally track precise elapsed time (store millis/nanos), not integer seconds. The current
+     1-second tick loop must be replaced with a start-timestamp + frequent UI tick (~30–50 ms).
+   - **For analytics, persist finish time at higher precision (≥5 decimal places).** Display rounds
+     to 2 dp; storage keeps the precision.
+4. **Disable automatic rotation** — lock the app to portrait orientation. Currently the screen
+   auto-rotates with the device; it should stay fixed. Add `android:screenOrientation="portrait"`
+   to the `<activity>` in `AndroidManifest.xml` (and/or set it in `MainActivity`).
+5. **Analytics (DEFERRED — design discussion required, not first step)** — log each finish
+   (finish time, finish steps) and show statistics: scatter of finish times, average finish time,
+   minimal finish steps, scatter of step-count vs finish-time, etc. Needs local persistence
+   (likely Room or a simple file/DataStore) and a stats/visualization screen. Discuss schema +
+   UI before building.
+
+### Additional requests (2026-06-06, second batch — NOT yet implemented)
+6. **Smooth move (tile slide animation)** — tiles currently snap instantly to the new position;
+   animate the slide instead. Keep it **fast** so it never slows the user down (~100–120 ms tween).
+   - Implementation note: the current `Board` lays tiles out in nested `Column`/`Row` cells, so the
+     same cell just swaps its number — there's no stable composable to animate. Switch to
+     absolutely-positioned tiles (one composable per tile *value*, placed by `Modifier.offset`),
+     and animate the offset with `animateDpAsState`/`Animatable`. Draw the static recesses as a
+     background grid so the blank slot still reads as a hole.
+7. **Multiple tile move (straight-line slide)** — a tap on a tile that is 2+ cells from the blank,
+   but in the *same row or column*, slides the whole line: every tile between the tapped tile and
+   the blank shifts one step toward the blank, and the blank ends at the tapped tile's old spot.
+   - Implementation note: generalize `PuzzleState.canMove` (same row **or** column, not just
+     adjacent) and `PuzzleState.move` (walk the blank one cell at a time toward the tapped index).
+     Move counter: a multi-tile slide counts as **N moves** (one per tile slid), so one multi-move
+     == the equivalent sequence of single taps — NOT +1 per tap. (Decided 2026-06-06.)
+   - Pairs naturally with #6: with per-value animated tiles, all shifted tiles animate at once.
+
 ## Feature Tiers
 - **v1 (MVP):** Working 4×4 15 puzzle, move counter, timer, new game button, solve detection
 - **Post-launch:** Additional grid sizes, image puzzles, leaderboard, animations, etc.
