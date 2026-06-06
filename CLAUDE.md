@@ -144,22 +144,17 @@ User-requested batch, in priority order. Analytics is deferred (heavy, needs des
    (likely Room or a simple file/DataStore) and a stats/visualization screen. Discuss schema +
    UI before building.
 
-### Additional requests (2026-06-06, second batch — NOT yet implemented)
-6. **Smooth move (tile slide animation)** — tiles currently snap instantly to the new position;
-   animate the slide instead. Keep it **fast** so it never slows the user down (~100–120 ms tween).
-   - Implementation note: the current `Board` lays tiles out in nested `Column`/`Row` cells, so the
-     same cell just swaps its number — there's no stable composable to animate. Switch to
-     absolutely-positioned tiles (one composable per tile *value*, placed by `Modifier.offset`),
-     and animate the offset with `animateDpAsState`/`Animatable`. Draw the static recesses as a
-     background grid so the blank slot still reads as a hole.
-7. **Multiple tile move (straight-line slide)** — a tap on a tile that is 2+ cells from the blank,
-   but in the *same row or column*, slides the whole line: every tile between the tapped tile and
-   the blank shifts one step toward the blank, and the blank ends at the tapped tile's old spot.
-   - Implementation note: generalize `PuzzleState.canMove` (same row **or** column, not just
-     adjacent) and `PuzzleState.move` (walk the blank one cell at a time toward the tapped index).
-     Move counter: a multi-tile slide counts as **N moves** (one per tile slid), so one multi-move
-     == the equivalent sequence of single taps — NOT +1 per tap. (Decided 2026-06-06.)
-   - Pairs naturally with #6: with per-value animated tiles, all shifted tiles animate at once.
+### Additional requests (2026-06-06, second batch)
+6. ✅ **Smooth move (tile slide animation)** (DONE — commit `51e0a82`, verified mid-slide on emulator) —
+   `Board` rearchitected from nested `Column`/`Row` cells to one composable per tile *value*,
+   absolutely positioned by an `offset` animated with a 110 ms tween (`animateDpAsState`). Static
+   recesses are drawn as a background grid so the blank still reads as a hole.
+7. ✅ **Multiple tile move (straight-line slide)** (DONE — commit `ddcacc3`, verified on emulator) —
+   a tap on a tile 2+ cells from the blank in the *same row/column* slides the whole line; the blank
+   ends at the tapped tile's old spot. `canMove` accepts any same-row/column tile, `move` walks the
+   blank one cell at a time, and `moveDistance` reports how many tiles slid.
+   - Move counter adds **N moves** (one per tile slid), NOT +1 per tap. (Decided 2026-06-06.)
+   - With #6's per-value tiles, all shifted tiles animate at once.
 
 ## Feature Tiers
 - **v1 (MVP):** Working 4×4 15 puzzle, move counter, timer, new game button, solve detection
