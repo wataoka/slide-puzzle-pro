@@ -54,21 +54,33 @@ fun GameScreen() {
     val size = 4
     var state by remember { mutableStateOf(PuzzleState.shuffled(size)) }
     var moves by remember { mutableIntStateOf(0) }
-    var seconds by remember { mutableIntStateOf(0) }
     var running by remember { mutableStateOf(true) }
 
-    // Timer ticks once per second while the game is running.
+    // Elapsed time is measured from a monotonic start timestamp so we keep full
+    // precision (analytics will record more decimals than the UI shows). When the
+    // game stops we freeze the final value into [frozenElapsedNanos].
+    var startNanos by remember { mutableLongStateOf(System.nanoTime()) }
+    var elapsedNanos by remember { mutableLongStateOf(0L) }
+    var frozenElapsedNanos by remember { mutableLongStateOf(0L) }
+
+    // Tick frequently while running so the centiseconds display stays smooth.
     LaunchedEffect(running) {
-        while (running) {
-            delay(1000)
-            seconds++
+        if (running) {
+            startNanos = System.nanoTime() - elapsedNanos
+            while (true) {
+                elapsedNanos = System.nanoTime() - startNanos
+                delay(33)
+            }
         }
     }
+    val displayNanos = if (running) elapsedNanos else frozenElapsedNanos
 
     fun newGame() {
         state = PuzzleState.shuffled(size)
         moves = 0
-        seconds = 0
+        elapsedNanos = 0
+        frozenElapsedNanos = 0
+        startNanos = System.nanoTime()
         running = true
     }
 
@@ -88,7 +100,7 @@ fun GameScreen() {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             StatChip("Moves", moves.toString())
-            StatChip("Time", formatTime(seconds))
+            StatChip("Time", formatTime(displayNanos))
         }
 
         Board(
@@ -98,7 +110,10 @@ fun GameScreen() {
                     soundPool.play(moveSoundId, 1f, 1f, 1, 0, 1f)
                     state = state.move(index)
                     moves++
-                    if (state.isSolved) running = false
+                    if (state.isSolved) {
+                        frozenElapsedNanos = System.nanoTime() - startNanos
+                        running = false
+                    }
                 }
             },
             modifier = Modifier.weight(1f, fill = false)
@@ -120,7 +135,7 @@ fun GameScreen() {
                 TextButton(onClick = { newGame() }) { Text("Play Again") }
             },
             title = { Text("You solved it!") },
-            text = { Text("Solved in $moves moves and ${formatTime(seconds)}.") }
+            text = { Text("Solved in $moves moves and ${formatTime(frozenElapsedNanos)} seconds.") }
         )
     }
 }
@@ -133,8 +148,10 @@ fun StatChip(label: String, value: String) {
     }
 }
 
-private fun formatTime(totalSeconds: Int): String {
-    val m = totalSeconds / 60
-    val s = totalSeconds % 60
-    return "%d:%02d".format(m, s)
+// Renders elapsed time as seconds with two decimal places, e.g. 83.45.
+private fun formatTime(nanos: Long): String {
+    val totalCentis = nanos / 10_000_000L  // 1 centisecond = 10ms
+    val seconds = totalCentis / 100
+    val centis = totalCentis % 100
+    return "%d.%02d".format(seconds, centis)
 }
