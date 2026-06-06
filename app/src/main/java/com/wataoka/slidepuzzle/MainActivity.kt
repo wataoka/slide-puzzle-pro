@@ -108,8 +108,9 @@ fun GameScreen() {
             onTileTap = { index ->
                 if (running && state.canMove(index)) {
                     soundPool.play(moveSoundId, 1f, 1f, 1, 0, 1f)
+                    // A straight-line slide counts as one move per tile slid.
+                    moves += state.moveDistance(index)
                     state = state.move(index)
-                    moves++
                     if (state.isSolved) {
                         frozenElapsedNanos = System.nanoTime() - startNanos
                         running = false

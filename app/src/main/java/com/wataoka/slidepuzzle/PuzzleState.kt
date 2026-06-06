@@ -22,24 +22,52 @@ data class PuzzleState(
         }
 
     /**
-     * Returns a new state with the tile at [index] moved into the blank slot,
-     * or the same state if that tile is not orthogonally adjacent to the blank.
+     * Returns a new state for a tap on [index]. If [index] shares the blank's
+     * row or column, every tile between them slides one step toward the blank
+     * and the blank ends up where the tapped tile was. Returns the same state
+     * if the tap is not on the blank's row or column.
      */
     fun move(index: Int): PuzzleState {
         if (!canMove(index)) return this
         val newTiles = tiles.toMutableList()
-        val blank = blankIndex
-        newTiles[blank] = newTiles[index]
-        newTiles[index] = 0
+        var blank = blankIndex
+        val r1 = index / size; val c1 = index % size
+        val r2 = blank / size; val c2 = blank % size
+        // Unit step (in flat-index space) from the blank toward the tapped tile.
+        val stepIndex = when {
+            r1 == r2 -> if (c1 > c2) 1 else -1        // same row: step right / left
+            else -> if (r1 > r2) size else -size      // same column: step down / up
+        }
+        // Walk the blank one cell at a time toward [index], shifting tiles over.
+        while (blank != index) {
+            val next = blank + stepIndex
+            newTiles[blank] = newTiles[next]
+            newTiles[next] = 0
+            blank = next
+        }
         return copy(tiles = newTiles)
     }
 
+    /** A tap is legal when the tile shares the blank's row or column (and isn't the blank). */
     fun canMove(index: Int): Boolean {
+        if (index == blankIndex) return false
         val blank = blankIndex
         val r1 = index / size; val c1 = index % size
         val r2 = blank / size; val c2 = blank % size
-        return (r1 == r2 && kotlin.math.abs(c1 - c2) == 1) ||
-               (c1 == c2 && kotlin.math.abs(r1 - r2) == 1)
+        return r1 == r2 || c1 == c2
+    }
+
+    /**
+     * Number of tiles a tap on [index] would slide — i.e. the cell distance to
+     * the blank along their shared row or column. 0 if the tap is illegal. Used
+     * for the move counter: a multi-tile slide counts as one move per tile slid.
+     */
+    fun moveDistance(index: Int): Int {
+        if (!canMove(index)) return 0
+        val blank = blankIndex
+        val r1 = index / size; val c1 = index % size
+        val r2 = blank / size; val c2 = blank % size
+        return if (r1 == r2) kotlin.math.abs(c1 - c2) else kotlin.math.abs(r1 - r2)
     }
 
     companion object {
