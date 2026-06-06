@@ -44,6 +44,8 @@ fun Board(
                     val value = state.tiles[index]
                     Tile(
                         value = value,
+                        // A tile is "home" when its value matches its solved slot (index + 1).
+                        isCorrect = value == index + 1,
                         onClick = { onTileTap(index) },
                         modifier = Modifier.weight(1f).fillMaxHeight()
                     )
@@ -56,6 +58,7 @@ fun Board(
 @Composable
 private fun Tile(
     value: Int,
+    isCorrect: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -63,10 +66,12 @@ private fun Tile(
         Box(modifier = modifier.clip(RoundedCornerShape(8.dp)).background(Color(0xFFC7CEDB)))
         return
     }
+    // Darker blue when the tile is in its correct position, lighter blue otherwise.
+    val tileColor = if (isCorrect) Color(0xFF1E4FD0) else Color(0xFF6B97FF)
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFF2E6BFF))
+            .background(tileColor)
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
