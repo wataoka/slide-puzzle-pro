@@ -191,16 +191,35 @@ counts that as invalid traffic once real (non-test) IDs are in use. Only verify 
 code / confirming the build compiles, not by watching the ad render, until the app is actually
 live.
 
-### Remaining before this can ship
-1. Rewrite the store listing full description — it currently says "No ads" (see
-   [Store Listing Copy](#store-listing-copy) above).
-2. Update Play Console → App content declarations: **Ads** (now Yes) and **Advertising ID**
-   (now used) — these were filled in as part of checklist item 9 before ads existed.
-3. Update the privacy policy (`store_assets/privacy_policy.html`, published via GitHub Pages)
-   to disclose AdMob's data collection.
-4. Once the app is public on Play, go back into AdMob → this app → App settings and link it to
+### Done (2026-07-26, while waiting on the production review)
+- [x] Rewrote the store listing full description in Play Console — dropped the "No ads" claim.
+  New text: "A clean, no-nonsense 15-puzzle with nothing in the way. No accounts and no fuss —
+  just you and the puzzle. Pick it up anytime, put it down anytime. It's always ready when you
+  are." Saved in Play Console (Grow users → Store presence → Store listings).
+- [x] Updated Play Console → App content declarations (Monitor and improve → Policy and
+  programs → App content):
+  - **Ads**: now "Yes, my app contains ads"
+  - **Advertising ID**: now "Yes" / use case "Advertising or marketing" (the AD_ID permission
+    was already confirmed present in the merged manifest, so release-error checks stay on) —
+    this one takes effect immediately, doesn't need a review submission
+- [x] Updated the privacy policy (`store_assets/privacy_policy.html` + `docs/privacy_policy.html`
+  — the latter is what GitHub Pages actually serves from; keep both in sync) to disclose AdMob.
+- [x] Submitted the store listing description change + Ads declaration change for Google's
+  review (2026-07-26, via Publishing overview → "Submit 2 changes for review"). Google says
+  reviews are typically done within 7 days. This is separate from — and, as far as the Console
+  UI indicates, does not block or get blocked by — the pending production access review
+  (submitted Jul 20).
+
+### Still remaining before this can ship
+1. Once the app is public on Play, go back into AdMob → this app → App settings and link it to
    the Play Store listing (couldn't be done yet since it wasn't found by package name).
-5. Bump `versionCode` in `app/build.gradle.kts` before building the release AAB (see
-   [Versioning Gotcha](#versioning-gotcha-learned-jun-2)).
-6. Build a signed release AAB and submit as a new Play Console release/update — this ships
+2. Build a signed release AAB and submit as a new Play Console release/update — this ships
    *after* the current production review (submitted Jul 20) resolves, not inside it.
+   `versionCode`/`versionName` are already bumped to 3 / 1.2 in `app/build.gradle.kts`, ready
+   for this build (see [Versioning Gotcha](#versioning-gotcha-learned-jun-2)).
+
+### ⚠️ New policy warning found (2026-07-26)
+Play Console → Policy status now shows: **"App must target Android 16 (API level 36) or
+higher — fix by Aug 31, 2026."** Current `targetSdk` in `app/build.gradle.kts` is 35. This is
+unrelated to ads — it's a separate, time-boxed Play requirement that needs its own task before
+Aug 31.
