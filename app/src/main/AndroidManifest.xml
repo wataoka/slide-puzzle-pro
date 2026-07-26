@@ -11,12 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SlidePuzzle">
 
-        <!-- TODO before release: replace with the real AdMob App ID from your AdMob account.
-             This is Google's public test App ID — safe for development, but ads will only
-             ever be labeled "Test Ad" and won't earn revenue. -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="ca-app-pub-6073336016442136~8713568263" />
 
         <activity
             android:name=".MainActivity"

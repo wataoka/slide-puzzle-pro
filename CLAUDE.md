@@ -178,21 +178,28 @@ intrusive, per project strategy of keeping things releasable).
   composable (uses `AndroidView` to host a classic `AdView`/`AdSize.BANNER`), placed at the
   bottom of `GameScreen`, below the game content and respecting `WindowInsets.navigationBars`.
 - Debug build (`assembleDebug`) compiles and installs cleanly.
+- App registered in AdMob (2026-07-26) as "Slide Puzzle Pro" / Android, under the same AdMob
+  account as the `ojisan2048` app. Not linked to the Play Store listing yet — AdMob couldn't
+  find it by package name because the app isn't publicly visible yet (Production review still
+  pending). Real IDs now in use:
+  - App ID: `ca-app-pub-6073336016442136~8713568263`
+  - Banner ad unit ID ("Slide Puzzle Banner"): `ca-app-pub-6073336016442136/1553117751`
+  - Both are live in `AndroidManifest.xml` / `MainActivity.kt` (no more test IDs).
 
-⚠️ **Currently using Google's public test IDs** (`ca-app-pub-3940256099942544~3347511713` for
-the app ID, `ca-app-pub-3940256099942544/6300978111` for the banner ad unit). These only ever
-show ads labeled "Test Ad" and earn no revenue — both are marked with `TODO` comments in the
-code (`AndroidManifest.xml` and `MainActivity.kt`).
+⚠️ **Do not load this banner in a running app on any test device/emulator** — AdMob policy
+counts that as invalid traffic once real (non-test) IDs are in use. Only verify by reading the
+code / confirming the build compiles, not by watching the ad render, until the app is actually
+live.
 
 ### Remaining before this can ship
-1. Create an AdMob account (if not already done) and register the app to get a real
-   App ID + banner ad unit ID. Swap them in for the two test IDs above.
-2. Rewrite the store listing full description — it currently says "No ads" (see
+1. Rewrite the store listing full description — it currently says "No ads" (see
    [Store Listing Copy](#store-listing-copy) above).
-3. Update Play Console → App content declarations: **Ads** (now Yes) and **Advertising ID**
+2. Update Play Console → App content declarations: **Ads** (now Yes) and **Advertising ID**
    (now used) — these were filled in as part of checklist item 9 before ads existed.
-4. Update the privacy policy (`store_assets/privacy_policy.html`, published via GitHub Pages)
+3. Update the privacy policy (`store_assets/privacy_policy.html`, published via GitHub Pages)
    to disclose AdMob's data collection.
+4. Once the app is public on Play, go back into AdMob → this app → App settings and link it to
+   the Play Store listing (couldn't be done yet since it wasn't found by package name).
 5. Bump `versionCode` in `app/build.gradle.kts` before building the release AAB (see
    [Versioning Gotcha](#versioning-gotcha-learned-jun-2)).
 6. Build a signed release AAB and submit as a new Play Console release/update — this ships

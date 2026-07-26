@@ -156,9 +156,7 @@ fun GameScreen() {
     }
 }
 
-// TODO before release: replace with the real banner ad unit ID from your AdMob account.
-// This is Google's public test ad unit ID — ads will be labeled "Test Ad" and earn no revenue.
-private const val BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
+private const val BANNER_AD_UNIT_ID = "ca-app-pub-6073336016442136/1553117751"
 
 @Composable
 fun BannerAdView(modifier: Modifier = Modifier) {
