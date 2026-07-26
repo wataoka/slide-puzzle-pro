@@ -16,12 +16,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        MobileAds.initialize(this)
         setContent {
             MaterialTheme(colorScheme = lightColorScheme(primary = Color(0xFF2E6BFF))) {
                 Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF2F4F8)) {
@@ -84,49 +90,58 @@ fun GameScreen() {
         running = true
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.systemBars)
-            .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        Spacer(Modifier.height(8.dp))
-        Text("Slide Puzzle", fontSize = 30.sp, color = Color(0xFF1A2238))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+    Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.systemBars)
+                .padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            StatChip("Moves", moves.toString())
-            StatChip("Time", formatTime(displayNanos))
-        }
+            Spacer(Modifier.height(8.dp))
+            Text("Slide Puzzle", fontSize = 30.sp, color = Color(0xFF1A2238))
 
-        Board(
-            state = state,
-            onTileTap = { index ->
-                if (running && state.canMove(index)) {
-                    soundPool.play(moveSoundId, 1f, 1f, 1, 0, 1f)
-                    // A straight-line slide counts as one move per tile slid.
-                    moves += state.moveDistance(index)
-                    state = state.move(index)
-                    if (state.isSolved) {
-                        frozenElapsedNanos = System.nanoTime() - startNanos
-                        running = false
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                StatChip("Moves", moves.toString())
+                StatChip("Time", formatTime(displayNanos))
+            }
+
+            Board(
+                state = state,
+                onTileTap = { index ->
+                    if (running && state.canMove(index)) {
+                        soundPool.play(moveSoundId, 1f, 1f, 1, 0, 1f)
+                        // A straight-line slide counts as one move per tile slid.
+                        moves += state.moveDistance(index)
+                        state = state.move(index)
+                        if (state.isSolved) {
+                            frozenElapsedNanos = System.nanoTime() - startNanos
+                            running = false
+                        }
                     }
-                }
-            },
-            modifier = Modifier.weight(1f, fill = false)
-        )
+                },
+                modifier = Modifier.weight(1f, fill = false)
+            )
 
-        Button(
-            onClick = { newGame() },
-            modifier = Modifier.fillMaxWidth().height(54.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E6BFF))
-        ) {
-            Text("New Game", fontSize = 18.sp)
+            Button(
+                onClick = { newGame() },
+                modifier = Modifier.fillMaxWidth().height(54.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E6BFF))
+            ) {
+                Text("New Game", fontSize = 18.sp)
+            }
         }
+
+        BannerAdView(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.navigationBars)
+        )
     }
 
     if (!running && state.isSolved) {
@@ -139,6 +154,24 @@ fun GameScreen() {
             text = { Text("Solved in $moves moves and ${formatTime(frozenElapsedNanos)} seconds.") }
         )
     }
+}
+
+// TODO before release: replace with the real banner ad unit ID from your AdMob account.
+// This is Google's public test ad unit ID — ads will be labeled "Test Ad" and earn no revenue.
+private const val BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
+
+@Composable
+fun BannerAdView(modifier: Modifier = Modifier) {
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            AdView(context).apply {
+                setAdSize(AdSize.BANNER)
+                adUnitId = BANNER_AD_UNIT_ID
+                loadAd(AdRequest.Builder().build())
+            }
+        }
+    )
 }
 
 @Composable

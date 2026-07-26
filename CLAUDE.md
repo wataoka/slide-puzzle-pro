@@ -74,7 +74,7 @@ Always prioritize getting something releasable over adding features. Keep Play S
 ### Store Listing Copy
 - **Title:** Slide Puzzle Pro
 - **Short description:** The classic 15-puzzle. Slide the tiles. Beat your time.
-- **Full description:**
+- **Full description** (⚠️ **stale — says "No ads", but ads are now being added; rewrite before next release**):
   > A clean, no-nonsense 15-puzzle with nothing in the way.
   >
   > No ads, no accounts, and no internet required — just you and the puzzle.
@@ -166,3 +166,34 @@ User-requested batch, in priority order. Analytics is deferred (heavy, needs des
   - Played via `SoundPool` in `MainActivity.kt` (`GameScreen`). Chosen over `AudioManager.playSoundEffect`
     because the latter only plays when the system "Touch sounds" setting is on — many users disable it.
   - `SoundPool` is created with `remember` and released in a `DisposableEffect(Unit) { onDispose { ... } }`.
+
+## In Progress: Ads (started 2026-07-26)
+Decision: **Google AdMob, banner only** (no interstitial — chosen to stay simple and less
+intrusive, per project strategy of keeping things releasable).
+
+- Dependency added: `com.google.android.gms:play-services-ads:23.6.0` in `app/build.gradle.kts`.
+- `AndroidManifest.xml`: added `INTERNET` permission (app was offline-only before) and the
+  `com.google.android.gms.ads.APPLICATION_ID` meta-data tag.
+- `MainActivity.kt`: `MobileAds.initialize(this)` called in `onCreate`; new `BannerAdView`
+  composable (uses `AndroidView` to host a classic `AdView`/`AdSize.BANNER`), placed at the
+  bottom of `GameScreen`, below the game content and respecting `WindowInsets.navigationBars`.
+- Debug build (`assembleDebug`) compiles and installs cleanly.
+
+⚠️ **Currently using Google's public test IDs** (`ca-app-pub-3940256099942544~3347511713` for
+the app ID, `ca-app-pub-3940256099942544/6300978111` for the banner ad unit). These only ever
+show ads labeled "Test Ad" and earn no revenue — both are marked with `TODO` comments in the
+code (`AndroidManifest.xml` and `MainActivity.kt`).
+
+### Remaining before this can ship
+1. Create an AdMob account (if not already done) and register the app to get a real
+   App ID + banner ad unit ID. Swap them in for the two test IDs above.
+2. Rewrite the store listing full description — it currently says "No ads" (see
+   [Store Listing Copy](#store-listing-copy) above).
+3. Update Play Console → App content declarations: **Ads** (now Yes) and **Advertising ID**
+   (now used) — these were filled in as part of checklist item 9 before ads existed.
+4. Update the privacy policy (`store_assets/privacy_policy.html`, published via GitHub Pages)
+   to disclose AdMob's data collection.
+5. Bump `versionCode` in `app/build.gradle.kts` before building the release AAB (see
+   [Versioning Gotcha](#versioning-gotcha-learned-jun-2)).
+6. Build a signed release AAB and submit as a new Play Console release/update — this ships
+   *after* the current production review (submitted Jul 20) resolves, not inside it.
