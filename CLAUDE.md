@@ -27,14 +27,15 @@ Always prioritize getting something releasable over adding features. Keep Play S
   - `Board.kt` — Compose grid UI component
 
 ## Current Status
-**Alpha (closed test) release in review by Google (Jun 3). Recruiting testers in progress.**
+**Applied for Production access (Jul 20). Waiting on Google's review.**
 
 > **NEXT ACTION (resume here):**
-> 1. Wait for Google to approve the Alpha release (~a few days). Track at Play Console → Closed testing → Alpha.
-> 2. Once approved, post to r/AndroidClosedTesting, r/TestersCommunity, r/AndroidAppTesters with the opt-in link.
-> 3. Monitor tester count in Play Console → Closed testing → Alpha → Testers tab. Need 12 opted in.
-> 4. Push 2–3 minor app updates during the 14-day window (subreddit requirement for r/AndroidAppTesters).
-> 5. After 14 continuous days with 12+ testers → promote to Production → submit for review.
+> 1. Application submitted via Play Console Dashboard on Jul 20, 10:47 PM. Google says review
+>    usually takes 7 days or less; they'll email the account owner (wataoka.koki@gmail.com) with
+>    an update.
+> 2. Check Play Console → Dashboard for status changes if no email arrives in ~7 days.
+> 3. After approval, app goes live to all users — no further action needed unless Google asks
+>    follow-up questions.
 
 ### Closed Testing Progress (as of Jun 3)
 - Google Group created: `slide-puzzle-pro-testers@googlegroups.com`
@@ -46,17 +47,15 @@ Always prioritize getting something releasable over adding features. Keep Play S
 - Opt-in URLs (active):
   - Web: https://play.google.com/apps/testing/com.wataoka.slidepuzzle
   - Android: https://play.google.com/store/apps/details?id=com.wataoka.slidepuzzle
-- Tester recruiting: posted on **r/TestMyApp** ✅; posts for r/AndroidClosedTesting, r/TestersCommunity, r/AndroidAppTesters **drafted, waiting for Google approval before posting**
+- Tester recruiting: **done** — posted on r/TestMyApp, r/AndroidClosedTesting, r/TestersCommunity, r/AndroidAppTesters ✅
 
 ### Tester Recruiting — Communities
 | Community | Status |
 |---|---|
 | r/TestMyApp | ✅ Posted |
-| r/AndroidClosedTesting | ⏳ Post once Google approves release |
-| r/TestersCommunity | ⏳ Post once Google approves release |
-| r/AndroidAppTesters | ⏳ Post once Google approves release (has strict format: App Name / Category / Testing Goals / Link) |
-
-> **Note:** r/AndroidAppTesters requires the post to include: App Name, App Category, Testing Goals, Link (opt-in). They also expect 2–3 version updates during the 14-day window and real tester engagement. Aim for 15–20 testers (buffer over the required 12).
+| r/AndroidClosedTesting | ✅ Posted |
+| r/TestersCommunity | ✅ Posted |
+| r/AndroidAppTesters | ✅ Posted |
 
 ### Play Store Submission Checklist
 - [x] 1. Generate signing keystore
@@ -69,8 +68,8 @@ Always prioritize getting something releasable over adding features. Keep Play S
 - [x] 8. Upload AAB + release to internal testing track
 - [x] 9. All 10 App content declarations completed (Data safety, Content ratings, Target audience, Ads, Privacy policy, App access, Advertising ID, Government apps, Financial features, Health apps)
 - [x] 10. Save store listing + publish closed test release (14 changes sent for review Jun 3)
-- [ ] 11. Recruit 12+ testers, run 14-day closed test (push 2–3 updates during window)
-- [ ] 12. Promote to Production + submit for review
+- [x] 11. Recruit 12+ testers, run 14-day closed test (confirmed done in Play Console Jul 20 — all 3 requirement checks are green)
+- [x] 12. Promote to Production + submit for review (application submitted Jul 20, 10:47 PM — awaiting Google's review, usually ≤7 days)
 
 ### Store Listing Copy
 - **Title:** Slide Puzzle Pro
